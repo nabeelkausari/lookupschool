@@ -111,6 +111,7 @@ export default [
 // Helpers
 export function includeClientPackages(packages, localModule?: string[]) {
   return function(context, request, cb) {
+    //noinspection TypeScriptUnresolvedFunction
     if (localModule instanceof RegExp && localModule.test(request)) {
       return cb();
     }

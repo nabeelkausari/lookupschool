@@ -22,7 +22,7 @@ export function main() {
   // https://github.com/typekit/webfontloader#configuration
   loadWebFont({
     google: {
-      families: ['Droid Sans']
+      families: ['Lato']
     }
   });
 
