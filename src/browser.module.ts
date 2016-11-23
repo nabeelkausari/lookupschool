@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, PreloadingStrategy, Route } from '@angular/router';
 import { UniversalModule, isBrowser, isNode, AUTO_PREBOOT } from 'angular2-universal/browser'; // for AoT we need to manually split universal packages
+
+import { Observable } from 'rxjs/Observable';
 
 import { AppModule, AppComponent } from './+app/app.module';
 import { SharedModule } from './+app/shared/shared.module';
@@ -28,6 +30,13 @@ export function getResponse() {
 }
 
 
+export class IdlePreloadAllModules implements PreloadingStrategy {
+  preload(route: Route, fn: () => Observable<any>): Observable<any> {
+    (window.requestIdleCallback || setTimeout)(fn);
+    return Observable.of(null);
+  }
+}
+
 // TODO(gdi2290): refactor into Universal
 export const UNIVERSAL_KEY = 'UNIVERSAL_CACHE';
 
@@ -38,12 +47,14 @@ export const UNIVERSAL_KEY = 'UNIVERSAL_CACHE';
     UniversalModule, // BrowserModule, HttpModule, and JsonpModule are included
 
     FormsModule,
-    RouterModule.forRoot([], { useHash: false }),
+    RouterModule.forRoot([], { useHash: false, preloadingStrategy: IdlePreloadAllModules }),
 
     SharedModule.forRoot(),
     AppModule,
   ],
   providers: [
+    IdlePreloadAllModules,
+
     { provide: 'isBrowser', useValue: isBrowser },
     { provide: 'isNode', useValue: isNode },
 
